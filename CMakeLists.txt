@@ -8,7 +8,9 @@ enable_testing()
 find_package(OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-add_executable(forsen src/forsen.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp)
+
+add_executable(forsen ${SOURCES})
 
 target_link_libraries( forsen ${OpenCV_LIBS} )
 
