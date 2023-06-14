@@ -84,4 +84,9 @@ void TemplateMatcher::filter_matches(std::vector<Match> &matches)
             }
         }
     }
+
+    // Sort matches by x value
+    std::sort(matches.begin(), matches.end(), [](const Match& a, const Match& b) {
+        return a.x < b.x;
+    });
 }
