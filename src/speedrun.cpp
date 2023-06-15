@@ -46,7 +46,7 @@ bool find_advancements(std::vector<std::string> advancements, std::unique_ptr<Vi
     cv::Mat frame;
     while(video->is_open()) {
         if(!video->read_frame(frame)) {
-            video.release();
+            video->release();
             break;
         }
 
@@ -77,7 +77,7 @@ bool find_advancements(std::vector<std::string> advancements, std::unique_ptr<Vi
 
         for(int i = 0; i < 60/3; i++) {
             if(!video->skip_frame()) {
-                video.release();
+                video->release();
                 break;
             }
         }
@@ -93,7 +93,7 @@ bool find_loading_screen(std::string event, std::unique_ptr<Video> &video, Run &
     cv::Mat frame;
     while(video->is_open()) {
         if(!video->read_frame(frame)) {
-            video.release();
+            video->release();
             break;
         }
 
@@ -110,7 +110,7 @@ bool find_loading_screen(std::string event, std::unique_ptr<Video> &video, Run &
 
         for(int i = 0; i < 2; i++) {
             if(!video->skip_frame()) {
-                video.release();
+                video->release();
                 break;
             }
         }
