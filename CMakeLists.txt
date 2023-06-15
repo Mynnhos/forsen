@@ -12,6 +12,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp)
 
 add_executable(forsen ${SOURCES})
+set_target_properties(forsen PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../bin/")
 
 target_link_libraries( forsen ${OpenCV_LIBS} )
 
