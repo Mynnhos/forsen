@@ -1,8 +1,5 @@
 #include "speedrun.hpp"
-#include <vector>
-#include "util/video/OpenCVVideo.hpp"
 #include "util/time.hpp"
-#include "Run.hpp"
 #include "matching.hpp"
 
 
@@ -49,6 +46,7 @@ bool find_advancements(std::vector<std::string> advancements, std::unique_ptr<Vi
     cv::Mat frame;
     while(video->is_open()) {
         if(!video->read_frame(frame)) {
+            video.release();
             break;
         }
 
@@ -90,13 +88,47 @@ bool find_advancements(std::vector<std::string> advancements, std::unique_ptr<Vi
     return false;
 }
 
+bool find_loading_screen(std::string event, std::unique_ptr<Video> &video, Run &run)
+{
+    cv::Mat frame;
+    while(video->is_open()) {
+        if(!video->read_frame(frame)) {
+            video.release();
+            break;
+        }
+
+        float time = get_time(frame);
+        if(!check_run(time, frame, run)) {
+            return false;
+        }
+        
+        if(is_loading_screen(frame)) {
+            printf("\tGot %s at %s\n", event.c_str(), time_to_str(run.last_time).c_str());
+            run.add_event(event, run.last_time);
+            return true;
+        }
+
+        for(int i = 0; i < 2; i++) {
+            if(!video->skip_frame()) {
+                video.release();
+                break;
+            }
+        }
+    }
+
+    run.reset();
+
+    return false;
+}
+
+
+
 void analyze_video(std::string path, int start_timestamp)
 {
-    configure_template_matchers();
     std::unique_ptr<Video> video = std::make_unique<OpenCVVideo>(path, start_timestamp);
-    // OpenCVVideo video = OpenCVVideo(path, (float)start_timestamp);
 
     while(video->is_open()) {
+        printf("Starting new run\n");
         Run run((int)round(video->get_current_time()));
 
         if(!find_advancements({"nether"}, std::ref(video), run)) {
@@ -107,7 +139,9 @@ void analyze_video(std::string path, int start_timestamp)
             continue;
         }
 
-        //TODO: find nether exit
+        if(!find_loading_screen("nether_exit", std::ref(video), run)) {
+            continue;
+        }
 
         if(!find_advancements({"stronghold"}, std::ref(video), run)) {
             continue;
@@ -119,4 +153,5 @@ void analyze_video(std::string path, int start_timestamp)
 
         //TODO: find end of game
     }
+    printf("Finished analyzing video\n");
 }

@@ -3,6 +3,7 @@
 
 TemplateMatcher igt_matcher = TemplateMatcher(8);
 TemplateMatcher adv_matcher = TemplateMatcher(40);
+TemplateMatcher loading_matcher = TemplateMatcher(40);
 
 
 void configure_template_matchers()
@@ -28,6 +29,10 @@ void configure_template_matchers()
     adv_matcher.add_template("fortress", "forsen_720/adv_fortress.png", 0.7f);
     adv_matcher.add_template("stronghold", "forsen_720/adv_stronghold.png", 0.7f);
     adv_matcher.add_template("end", "forsen_720/adv_end.png", 0.7f);
+
+    loading_matcher.set_bounds(510, 258, 610, 278);
+    loading_matcher.add_template("loading", "forsen_720/loading_screen_1.png", 0.7f);
+    loading_matcher.add_template("loading", "forsen_720/loading_screen_2.png", 0.7f);
 }
 
 float get_time(cv::Mat &frame)
@@ -57,4 +62,9 @@ std::vector<std::string> get_advancements(cv::Mat &frame)
         advs.push_back(match.name);
     }
     return advs;
+}
+
+bool is_loading_screen(cv::Mat &frame)
+{
+    return loading_matcher.get_matches(frame).size() > 0;
 }
