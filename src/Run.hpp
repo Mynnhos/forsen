@@ -9,6 +9,7 @@ public:
     ~Run();
 
     void add_event(std::string event, int time);
+    bool has_event(std::string event);
     void set_suspicous(bool is_suspicous);
 
     void reset();

@@ -24,6 +24,11 @@ void Run::add_event(std::string event, int time)
     events.emplace(event, time);
 }
 
+bool Run::has_event(std::string event)
+{
+    return events.find(event) != events.end();
+}
+
 void Run::set_suspicous(bool is_suspicous)
 {
     this->is_suspicous = is_suspicous;
