@@ -37,7 +37,7 @@ int time_to_int(std::string time)
 {
     int hh, mm, ss;
     try {
-        sscanf(time.c_str(), "%d:%d:%d", &hh, &mm, &ss);
+        sscanf_s(time.c_str(), "%d:%d:%d", &hh, &mm, &ss);
     } catch(...) {
         return -1;
     }
