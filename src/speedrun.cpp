@@ -1,8 +1,10 @@
 #include "speedrun.hpp"
 #include <vector>
 #include "util/video/OpenCVVideo.hpp"
+#include "util/time.hpp"
 #include "Run.hpp"
 #include "matching.hpp"
+
 
 
 /// @brief Check if the run is reset, is played, switched to spectator mode, ...
@@ -30,6 +32,18 @@ bool check_run(float time, cv::Mat& frame, Run &run)
 }
 
 
+
+bool is_advancement_legit(std::string advancement, Run &run)
+{
+    if(advancement == "bastion" && run.current_place != "nether") return false;
+    if(advancement == "fortress" && run.current_place != "nether") return false;
+    if(advancement == "nether_exit" && (!run.has_event("bastion") || !run.has_event("fortress"))) return false;
+    if(advancement == "stronghold" && !run.has_event("nether_exit")) return false;
+    if(advancement == "end" && !run.has_event("stronghold")) return false;
+
+    return true;
+}
+
 bool find_advancements(std::vector<std::string> advancements, std::unique_ptr<Video>& video, Run &run)
 {
     cv::Mat frame;
@@ -43,7 +57,25 @@ bool find_advancements(std::vector<std::string> advancements, std::unique_ptr<Vi
             return false;
         }
 
-        //TODO: Check if we find an advancement. If all found switch to next part
+        std::vector advs = get_advancements(frame);
+        for(auto adv : advs) {
+            if(std::find(advancements.begin(), advancements.end(), adv) == advancements.end() || run.has_event(adv))
+                continue;
+            
+            if(!is_advancement_legit(adv, run))
+                continue;
+            
+            printf("\tGot advancement %s at %s\n", adv.c_str(), time_to_str(run.last_time).c_str());
+            run.add_event(adv, run.last_time-1); //1s delay to account for the advancement animation
+            if(adv == "nether") run.current_place = "nether";
+            else if(adv == "end") run.current_place = "end";
+
+            advancements.erase(std::remove(advancements.begin(), advancements.end(), adv), advancements.end());
+        }
+
+        if(advancements.empty())
+            return true;
+        
 
         for(int i = 0; i < 60/3; i++) {
             if(!video->skip_frame()) {
@@ -77,9 +109,13 @@ void analyze_video(std::string path, int start_timestamp)
 
         //TODO: find nether exit
 
-        //TODO: find stronghold entry
+        if(!find_advancements({"stronghold"}, std::ref(video), run)) {
+            continue;
+        }
 
-        //TODO: find end entry
+        if(!find_advancements({"end"}, std::ref(video), run)) {
+            continue;
+        }
 
         //TODO: find end of game
     }

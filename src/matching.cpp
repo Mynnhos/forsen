@@ -2,6 +2,7 @@
 
 
 TemplateMatcher igt_matcher = TemplateMatcher(8);
+TemplateMatcher adv_matcher = TemplateMatcher(40);
 
 
 void configure_template_matchers()
@@ -20,6 +21,13 @@ void configure_template_matchers()
     igt_matcher.add_template("7", "forsen_720/7_2.png", 0.8f);
     igt_matcher.add_template("8", "forsen_720/8.png", 0.85f);
     igt_matcher.add_template("9", "forsen_720/9.png", 0.85f);
+
+    adv_matcher.set_bounds(1019, 31, 1055, 200);
+    adv_matcher.add_template("nether", "forsen_720/adv_nether.png", 0.7f);
+    adv_matcher.add_template("bastion", "forsen_720/adv_bastion.png", 0.7f);
+    adv_matcher.add_template("fortress", "forsen_720/adv_fortress.png", 0.7f);
+    adv_matcher.add_template("stronghold", "forsen_720/adv_stronghold.png", 0.7f);
+    adv_matcher.add_template("end", "forsen_720/adv_end.png", 0.7f);
 }
 
 float get_time(cv::Mat &frame)
@@ -38,4 +46,15 @@ float get_time(cv::Mat &frame)
     int ms = 100*std::stoi(matches[4].name) + 10*std::stoi(matches[5].name) + std::stoi(matches[6].name);
 
     return mm*60+ss+ms/1000.0f;
+}
+
+std::vector<std::string> get_advancements(cv::Mat &frame)
+{
+    // Get matches and return a list of the names
+    std::vector<Match> matches = adv_matcher.get_matches(frame);
+    std::vector<std::string> advs;
+    for(auto match : matches) {
+        advs.push_back(match.name);
+    }
+    return advs;
 }
