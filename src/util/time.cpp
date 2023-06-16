@@ -1,4 +1,5 @@
 #include "time.hpp"
+#include <sstream>
 #include <string>
 #include <algorithm>
 #include <format>
@@ -37,9 +38,15 @@ int time_to_int(std::string time)
 {
     int hh, mm, ss;
     try {
-        sscanf_s(time.c_str(), "%d:%d:%d", &hh, &mm, &ss);
+        std::istringstream iss(time);
+        std::string token;
+        std::getline(iss, token, ':');  hh = std::stoi(token);
+        std::getline(iss, token, ':');  mm = std::stoi(token);
+        std::getline(iss, token);       ss = std::stoi(token);
     } catch(...) {
         return -1;
     }
+    if(hh < 0 || mm < 0 || ss < 0 || mm > 59 || ss > 59 || hh > 99)
+        return -1;
     return hh * 3600 + mm * 60 + ss;
 }
