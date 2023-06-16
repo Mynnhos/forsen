@@ -1,10 +1,32 @@
 #include <iostream>
 #include <algorithm>
+#include <filesystem>
 
 #include "util/args.hxx"
 #include "util/time.hpp"
 #include "speedrun.hpp"
 #include "matching.hpp"
+
+
+bool download_vod(int vod_id, std::vector<int>& timestamps)
+{
+    bool success = true;
+    for(int i = 0; i < timestamps.size() - 1; i++) {
+        if(std::filesystem::exists(std::format("output/{}_{}.mp4", vod_id, i))) {
+            printf("Not downloading segment %d (already downloaded)\n", i);
+            continue;
+        }
+        int start = timestamps[i];
+        int end = timestamps[i+1];
+        printf("##### Downloading segment %d from %s to %s\n", i, time_to_excel_format(start).c_str(), time_to_excel_format(end).c_str());
+        int ret = system(std::format("TwitchDownloaderCLI.exe videodownload --id {} --output output/{}_{}.mp4 --quality 720p60 -b {} -e {}",
+                                        vod_id, vod_id, i, start, end).c_str());
+        if(ret != 0)
+            success = false;
+        printf("\n");
+    }
+    return success;
+}
 
 int main(int argc, char **argv)
 {
@@ -61,6 +83,12 @@ int main(int argc, char **argv)
         printf("%s ", time_to_excel_format(timestamp).c_str());
     }
     printf(".\n\n");
+
+
+    if(!download_vod(args::get(vod_id), timestamps)) {
+        printf("Failed to download VOD\n");
+        return -1;
+    }
     
     clock_t start, end;
     start = clock();
