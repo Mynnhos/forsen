@@ -6,6 +6,7 @@
 #include "util/time.hpp"
 #include "speedrun.hpp"
 #include "matching.hpp"
+#include "Run.hpp"
 
 
 bool download_vod(int vod_id, std::vector<int>& timestamps)
@@ -93,7 +94,14 @@ int main(int argc, char **argv)
     clock_t start, end;
     start = clock();
 
-    //TODO: Everything
+    configure_template_matchers();
+    for(int i = 0; i < timestamps.size() - 1; i++) {
+        printf("\n##### Analyzing segment %d from %s to %s\n", i, time_to_excel_format(timestamps[i]).c_str(), time_to_excel_format(timestamps[i+1]).c_str());
+        std::string filename = std::format("output/{}_{}.mp4", args::get(vod_id), i);
+        analyze_video(filename, timestamps[i]);
+    }
+
+    Run::save_runs(args::get(vod_date), args::get(vod_id), timestamps.back() - timestamps.front());
 
     end = clock();
 
