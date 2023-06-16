@@ -1,8 +1,66 @@
 #include <iostream>
+#include <algorithm>
 
-int main()
+#include "util/args.hxx"
+#include "util/time.hpp"
+#include "speedrun.hpp"
+#include "matching.hpp"
+
+int main(int argc, char **argv)
 {
+    args::ArgumentParser parser("forsen - A speedrun analysis tool for Twitch VODs", "");
+    args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
+    args::ValueFlag<int> vod_id(parser, "vod_id", "Twitch VOD ID", {'i', "id"});
+    args::ValueFlag<std::string> vod_date(parser, "YYYY-MM-DD", "Twitch VOD date (YYYY-MM-DD)", {'d', "date"});
+    args::Flag timestamps_flag(parser, "HH:MM:SS", "Timestamps of the beginning/end (and any number of intermediate cuts) (HH:MM:SS)", {'t', "times"});
+    args::PositionalList <std::string> timestamps_str(parser, "HH:MM:SS", "HH:MM:SS timestamps");
+
+    try {
+        parser.ParseCLI(argc, argv);
+    } catch (args::Help) {
+        std::cout << parser;
+        return 0;
+    } catch (args::ParseError e) {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    } catch (args::ValidationError e) {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
+
+    if(!vod_id || !vod_date || !timestamps_str || args::get(timestamps_str).size() < 2) {
+        printf("Correct usage: --id VOD_ID --date YYYY-MM-DD --times HH:MM:SS [...] HH:MM:SS\n");
+        if(!vod_id) printf("\tMissing VOD ID\n");
+        if(!vod_date) printf("\tMissing VOD date\n");
+        if(!timestamps_str) printf("\tMissing timestamps\n");
+        if(args::get(timestamps_str).size() < 2) printf("\tNeed at least 2 timestamps\n");
+        return -1;
+    }
+
+    std::vector<int> timestamps;
+    for(std::string timestamp : args::get(timestamps_str)) {
+        int time = time_to_int(timestamp);
+        if(time < 0) {
+            printf("Invalid timestamp: %s\n", timestamp.c_str());
+            return -1;
+        }
+        timestamps.push_back(time);
+    }
+    
+    if(!std::is_sorted(timestamps.begin(), timestamps.end())) {
+        printf("Timestamps must be in order\n");
+        return -1;
+    }
+
+
     printf("\n!===== forsenLevel !\n");
+    printf("Analyzing VOD %d from %s. Timestamps: ", args::get(vod_id), args::get(vod_date).c_str());
+    for(int timestamp : timestamps) {
+        printf("%s ", time_to_excel_format(timestamp).c_str());
+    }
+    printf(".\n\n");
     
     clock_t start, end;
     start = clock();
