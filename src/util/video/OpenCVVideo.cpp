@@ -12,7 +12,7 @@ OpenCVVideo::OpenCVVideo(std::string path, float starting_time) : Video(path)
 
     width = (unsigned int)capture.get(cv::CAP_PROP_FRAME_WIDTH);
     height = (unsigned int)capture.get(cv::CAP_PROP_FRAME_HEIGHT);
-    fps = (unsigned int)capture.get(cv::CAP_PROP_FPS);
+    fps = (unsigned int)round(capture.get(cv::CAP_PROP_FPS));
     f = 0;
     t0 = starting_time;
 
