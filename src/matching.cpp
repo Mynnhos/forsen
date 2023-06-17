@@ -4,6 +4,7 @@
 TemplateMatcher igt_matcher = TemplateMatcher(8);
 TemplateMatcher adv_matcher = TemplateMatcher(40);
 TemplateMatcher loading_matcher = TemplateMatcher(40);
+TemplateMatcher spectator_matcher = TemplateMatcher(40);
 
 
 void configure_template_matchers()
@@ -24,15 +25,18 @@ void configure_template_matchers()
     igt_matcher.add_template("9", "forsen_720/9.png", 0.85f);
 
     adv_matcher.set_bounds(1019, 31, 1055, 200);
-    adv_matcher.add_template("nether", "forsen_720/adv_nether.png", 0.7f);
-    adv_matcher.add_template("bastion", "forsen_720/adv_bastion.png", 0.7f);
-    adv_matcher.add_template("fortress", "forsen_720/adv_fortress.png", 0.7f);
-    adv_matcher.add_template("stronghold", "forsen_720/adv_stronghold.png", 0.7f);
-    adv_matcher.add_template("end", "forsen_720/adv_end.png", 0.7f);
+    adv_matcher.add_template("nether", "forsen_720/adv_nether.png", 0.8f);
+    adv_matcher.add_template("bastion", "forsen_720/adv_bastion.png", 0.8f);
+    adv_matcher.add_template("fortress", "forsen_720/adv_fortress.png", 0.8f);
+    adv_matcher.add_template("stronghold", "forsen_720/adv_stronghold.png", 0.8f);
+    adv_matcher.add_template("end", "forsen_720/adv_end.png", 0.8f);
 
     loading_matcher.set_bounds(510, 258, 610, 278);
     loading_matcher.add_template("loading", "forsen_720/loading_screen_1.png", 0.7f);
     loading_matcher.add_template("loading", "forsen_720/loading_screen_2.png", 0.7f);
+
+    spectator_matcher.set_bounds(364, 674, 435, 692);
+    spectator_matcher.add_template("spectator", "forsen_720/spectator_menu.png", 0.7f);
 }
 
 float get_time(cv::Mat &frame)
@@ -67,4 +71,9 @@ std::vector<std::string> get_advancements(cv::Mat &frame)
 bool is_loading_screen(cv::Mat &frame)
 {
     return loading_matcher.get_matches(frame).size() > 0;
+}
+
+bool is_spectator_menu(cv::Mat &frame)
+{
+    return spectator_matcher.get_matches(frame).size() > 0;
 }

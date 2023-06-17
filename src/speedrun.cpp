@@ -11,8 +11,13 @@
 /// @return True if the run is still ongoing, false if we reset
 bool check_run(float time, cv::Mat& frame, Run &run)
 {
-    if(time <= 0)
+    if(time <= 0) {
+        if(run.spectator_switch_time <= 0 && is_spectator_menu(frame)) {
+            printf("\tSwitched to spectator mode at %s\n", time_to_str(run.last_time).c_str());
+            run.spectator_switch_time = run.last_time;
+        }
         return true;
+    }
     
     if(run.last_time >= 3 && (time > 0 && time < 3)) {
         run.reset();
@@ -21,8 +26,6 @@ bool check_run(float time, cv::Mat& frame, Run &run)
 
     if(!run.played && time > 45)
         run.played = true;
-    
-    //TODO: Check if we switched to spectator mode
 
     run.last_time = (int)round(time);
     return true;
