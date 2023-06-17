@@ -101,6 +101,7 @@ int main(int argc, char **argv)
         analyze_video(filename, timestamps[i]);
     }
 
+    std::filesystem::create_directories("output");
     Run::save_runs(args::get(vod_date), args::get(vod_id), timestamps.back() - timestamps.front());
 
     end = clock();
