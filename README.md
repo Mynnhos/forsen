@@ -6,10 +6,11 @@ Downloads forsen's Minecraft VODs and analyzes them to get statistics. Written i
 
 **Compiling**: create a build folder, cd into it. Run ```cmake ..``` to generate build files, and ```cmake --build .``` to build the project.
 
-**Executing**: Run ``` forsen.exe --id STREAM_ID --date YYYY-MM-DD --times [HH:MM:SS]```. You need to specify at least two times (beginning and end), but you can specify more to split the VOD into multiple parts (in case the download fails). _**NOTE**: as of 2023-05-14 the intermediate times need to be between runs (i.e. when a seed if being loaded) otherwise the last run is reset when the video ends._
+**Executing**: Run ``` forsen.exe --id STREAM_ID --date YYYY-MM-DD --times [HH:MM:SS]```. You need to specify at least two times (beginning and end), but you can specify more to split the VOD into multiple parts (saves some time if the download fails). _**NOTE**: as of 2023-05-14 the intermediate times need to be between runs (i.e. when a seed if being loaded) otherwise the last run is reset when the video ends._
+- **Important**: in the folder containing the executable, you need to have the ["TwitchDownloaderCLI.exe" executable](https://github.com/lay295/TwitchDownloader) (to download the vods), as well as the "forsen_720" folder containing the templates (available in the releases).
 
 # How to contribute
-**SUMMARY**: fork the repository and create **small** commits on your local repository (include any issue reference in your commit messages). Create a pull request when you're ready. Please use snake_case to keep a consistant code style.
+**SUMMARY**: fork the repository and create commits on your fork (include any issue reference in your commit messages). Create a pull request when you're ready.
 
 - Fork the repository and clone it on your computer.
 - OPTIONAL: keep your fork up to date with this repo
@@ -19,6 +20,6 @@ Downloads forsen's Minecraft VODs and analyzes them to get statistics. Written i
 - Create a new branch using ```git checkout -b BRANCH_NAME``` (or do everything in main).
 - Do whatever changes you want
 - Push your changes to your fork: ```git add -all```, ```git commit -m "brief description"``` and ```git push origin BRANCH_NAME```
-  - **When related to an issue please include the issue reference in the commit message (URL or )**
+  - **When related to an issue please include the issue reference in the commit message (e.g. #9999)**
   - **Keep your commits small**. Create a commit for each issue/feature/idea. 
 - Create a pull request: on your fork page on GitHub click on _"Compare and pull request"_ describing what you changed. I'll review it as soon as possible.
