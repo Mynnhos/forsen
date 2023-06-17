@@ -20,7 +20,7 @@ bool download_vod(int vod_id, std::vector<int>& timestamps)
         int start = timestamps[i];
         int end = timestamps[i+1];
         printf("##### Downloading segment %d from %s to %s\n", i, time_to_excel_format(start).c_str(), time_to_excel_format(end).c_str());
-        int ret = system(std::format("TwitchDownloaderCLI.exe videodownload --id {} --output output/{}_{}.mp4 --quality 720p60 -b {} -e {}",
+        int ret = system(std::format("TwitchDownloaderCLI videodownload --id {} --output output/{}_{}.mp4 --quality 720p60 -b {} -e {}",
                                         vod_id, vod_id, i, start, end).c_str());
         if(ret != 0)
             success = false;
